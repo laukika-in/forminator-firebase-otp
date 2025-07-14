@@ -1,52 +1,48 @@
-<?php
-
+<?php 
 function ffotp_get_forminator_forms_with_fields() {
-    if (!class_exists('Forminator_API')) return [];
+    if ( ! class_exists( 'Forminator_API' ) ) {
+        return [];
+    }
 
-    $forms = Forminator_API::get_forms(); // returns WP_Post[]
+    $forms  = Forminator_API::get_forms(); // returns Forminator_Form_Model[]
     $result = [];
 
-    foreach ($forms as $form_post) {
-        $form_id = $form_post->ID;
-        $form_title = $form_post->post_title;
+    foreach ( $forms as $form ) {
+        // model already has ->id and ->name
+        $form_id    = $form->id;
+        $form_title = $form->name;
 
-        error_log("Checking form: $form_id - $form_title");
-
-        $form_model = Forminator_API::get_form($form_id);
-        if (!$form_model || !isset($form_model->raw['fields'])) {
-            error_log("No raw field data for form ID: $form_id");
+        // make sure raw fields exist
+        if ( empty( $form->raw['fields'] ) || ! is_array( $form->raw['fields'] ) ) {
             continue;
         }
 
-        $form_fields = $form_model->raw['fields'];
-        error_log("Total fields for form ID {$form_id}: " . count($form_fields));
-
         $fields = [];
 
-        foreach ($form_fields as $field) {
-            $name    = $field['name'] ?? '';
-            $label   = $field['field_label'] ?? '';
-            $element = $field['element'] ?? '';
+        foreach ( $form->raw['fields'] as $field ) {
+            $name  = $field['name']        ?? '';
+            $label = $field['field_label'] ?? '';
 
-            error_log("Field element: {$element} | name: {$name} | label: {$label}");
-
-            if (!empty($name)) {
-                $display_label = !empty($label) ? $label : ucfirst($element);
-                $fields[$name] = "{$display_label} ({$name})";
+            if ( ! $name ) {
+                continue;
             }
+
+            $display_label = $label ?: $name;
+            $fields[ $name ] = "{$display_label} ({$name})";
         }
 
-        $result[$form_id] = [
-            'name'   => $form_title,
-            'fields' => $fields
-        ];
+        // only include forms that actually have fields
+        if ( ! empty( $fields ) ) {
+            $result[ $form_id ] = [
+                'name'   => $form_title,
+                'fields' => $fields,
+            ];
+        }
     }
 
     return $result;
 }
-
-
-
+ 
 function ffotp_get_forminator_forms() {
     if (!class_exists('Forminator_API')) return [];
 
