@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (typeof FFOTP_Settings === "undefined" || !FFOTP_Settings.forms) return;
 
   Object.entries(FFOTP_Settings.forms).forEach(([formId, phoneField]) => {
-    const formSelector = `#forminator-module`;
+    const formSelector = `#forminator-module-${formId}`;
     const checkFormInterval = setInterval(() => {
       const form = document.querySelector(formSelector);
       if (!form) return;
