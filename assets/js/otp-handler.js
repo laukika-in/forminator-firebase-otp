@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const otpContainer = document.createElement("div");
       otpContainer.innerHTML = `
         <div id="recaptcha-container-${formId}"></div>
-
         <button type="button" id="send-otp-${formId}" class="ffotp-send-otp">Send OTP</button>
         <div id="otp-loading-${formId}" style="display:none;">Sending...</div>
         <div id="otp-section-${formId}" class="ffotp-otp-ui" style="display:none; margin-top: 10px;">
@@ -43,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const errorBox = form.querySelector(`#error-message-${formId}`);
 
       let otpVerified = false;
-      let recaptchaVerifier;
+      window[`recaptchaVerifier_${formId}`] = null;
 
       function showError(msg) {
         errorBox.textContent = msg;
@@ -106,13 +105,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         initRecaptcha(formId);
-
         loading.style.display = "block";
         sendBtn.style.display = "none";
 
         firebase
           .auth()
-          .signInWithPhoneNumber(fullPhone, recaptchaVerifier)
+          .signInWithPhoneNumber(
+            fullPhone,
+            window[`recaptchaVerifier_${formId}`]
+          )
+
           .then((result) => {
             window[`confirmationResult_${formId}`] = result;
             loading.style.display = "none";
