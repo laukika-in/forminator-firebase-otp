@@ -36,7 +36,7 @@ function ffotp_enqueue_otp_script() {
     <?php
 
     // Enqueue OTP handler script
-    wp_enqueue_script('ffotp-js', FFOTP_URL . 'assets/js/otp-handler.js', [], null, true);
+    wp_enqueue_script('ffotp-js', FFOTP_URL . 'assets/js/otp-handler.js', [], FFOTP_VERSION, true);
     wp_localize_script('ffotp-js', 'FFOTP_Settings', [
         'forms' => $mappings
     ]);
