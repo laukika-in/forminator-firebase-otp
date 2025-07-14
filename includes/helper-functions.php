@@ -39,8 +39,8 @@ function ffotp_get_forminator_forms_with_fields() {
         $form_fields = Forminator_API::get_form($form->id)->get_fields();
 
         foreach ($form_fields as $field) {
-            if ($field['element'] === 'phone') {
-                $fields[$field['name']] = $field['field_label'] . ' (' . $field['name'] . ')';
+            if ($field->element === 'phone') {
+                $fields[$field->name] = $field->field_label . ' (' . $field->name . ')';
             }
         }
 
@@ -52,3 +52,4 @@ function ffotp_get_forminator_forms_with_fields() {
 
     return $result;
 }
+
