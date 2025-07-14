@@ -1,46 +1,56 @@
-<?php
-
+<?php 
 function ffotp_get_forminator_forms_with_fields() {
-    if (!class_exists('Forminator_API')) return [];
+    if ( ! class_exists( 'Forminator_API' ) ) {
+        return [];
+    }
 
-    $forms = Forminator_API::get_forms();
-    $result = [];
+    // get_forms() returns Forminator_Form_Model[] or WP_Post[]
+    $posts_or_models = Forminator_API::get_forms();
+    $result          = [];
 
-    foreach ($forms as $form) {
-        error_log("Checking form: " . $form->id . ' - ' . $form->name);
+    foreach ( $posts_or_models as $form_post_or_model ) {
+        // determine ID + title regardless of whether it's WP_Post or Forminator_Model
+        $form_id    = isset( $form_post_or_model->ID ) 
+                          ? $form_post_or_model->ID 
+                          : $form_post_or_model->id;
+        $form_title = isset( $form_post_or_model->post_title ) 
+                          ? $form_post_or_model->post_title 
+                          : $form_post_or_model->name;
 
-        $form_model = Forminator_API::get_form($form->id);
-        if (!$form_model || !method_exists($form_model, 'get_fields')) {
-            error_log("No model or get_fields for form ID: " . $form->id);
+        // now load the true model
+        $form_model = Forminator_API::get_form( $form_id );
+        if ( ! $form_model instanceof Forminator_Form_Model 
+             || empty( $form_model->raw['fields'] ) 
+             || ! is_array( $form_model->raw['fields'] ) ) {
             continue;
         }
 
-        $form_fields = $form_model->get_fields();
-        error_log("Total fields for form ID {$form->id}: " . count($form_fields));
-
         $fields = [];
+        // each raw field is an array; its settings contain name + label
+        foreach ( $form_model->raw['fields'] as $field_def ) {
+            $settings = $field_def['settings'] ?? [];
+            $name     = $settings['name']  ?? '';
+            $label    = $settings['label'] ?? '';
 
-        foreach ($form_fields as $field) {
-            $name    = property_exists($field, 'name') ? $field->name : '';
-            $label   = property_exists($field, 'field_label') ? $field->field_label : '';
-            $element = property_exists($field, 'element') ? $field->element : '';
-
-            error_log("Field element: {$element} | name: {$name} | label: {$label}");
-
-            if (!empty($name)) {
-                $display_label = !empty($label) ? $label : ucfirst($element);
-                $fields[$name] = "{$display_label} ({$name})";
+            if ( ! $name ) {
+                continue;
             }
+
+            $display = $label ? $label : $name;
+            $fields[ $name ] = "{$display} ({$name})";
         }
 
-        $result[$form->id] = [
-            'name'   => $form->name,
-            'fields' => $fields
-        ];
+        if ( ! empty( $fields ) ) {
+            $result[ $form_id ] = [
+                'name'   => $form_title,
+                'fields' => $fields,
+            ];
+        }
     }
 
     return $result;
 }
+
 
 function ffotp_get_forminator_forms() {
     if (!class_exists('Forminator_API')) return [];
