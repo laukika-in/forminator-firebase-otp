@@ -1,10 +1,13 @@
 <?php
-/*
-Plugin Name: Forminator Firebase OTP
-Description: Firebase-based OTP verification for Forminator forms.
-Version: 1.26
-Author: Your Name
-*/
+/**
+ * Plugin Name: Forminator Firebase OTP
+ * Description: Firebase-based OTP verification for Forminator forms.
+ * Plugin URI: https://laukika.com/
+ * Author: Laukika
+ * Version: 1.0.0
+ * Author URI: https://laukika.com/
+ * Text Domain: ffotp
+ */
 
 if (!defined('ABSPATH')) exit;
 $plugin_data = get_file_data(__FILE__, ['Version' => 'Version'], false);
