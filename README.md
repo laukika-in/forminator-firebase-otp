@@ -9,6 +9,11 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Add Firebase OTP-based phone verification to selected Forminator forms with configurable Firebase settings, field mapping, and seamless frontend integration.
 
+== Requirements ==
+
+- WordPress 5.5+
+- Forminator Plugin (free, by WPMU DEV)
+
 == Description ==
 
 **Forminator Firebase OTP** lets you easily enable OTP-based phone verification on your Forminator forms using Firebase Authentication.
@@ -34,9 +39,6 @@ Add Firebase OTP-based phone verification to selected Forminator forms with conf
 = Does this plugin send SMS? =  
 No. Firebase Authentication handles OTP generation and SMS delivery.
 
-= Does this work with all field types? =  
-It works with `text`, `phone`, and `number` fields. You can map them via the admin panel.
-
 = Can I style the OTP box? =  
 Yes. Frontend CSS is enqueued and can be overridden or extended in your theme.
 
@@ -48,18 +50,6 @@ Yes. Frontend CSS is enqueued and can be overridden or extended in your theme.
 
 == Changelog ==
 
-= 1.4 =
-
-- Added dynamic plugin versioning
-- Improved form field detection
-- Removed hardcoded country select in favour of native Forminator fields
-- Cleaner UI with CSS
-
 = 1.0 =
 
 - Initial release
-
-== Upgrade Notice ==
-
-= 1.4 =
-Recommended upgrade for better field compatibility and frontend flexibility.
