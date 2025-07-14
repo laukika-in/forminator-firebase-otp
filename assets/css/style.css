@@ -38,7 +38,7 @@
   margin: 4px 4px 0px 0px;
   padding: 4px 12px;
   font-size: 13px;
-  max-width: 120px;
+  max-width: 120px !important;
   width: 100%;
   height: 30px;
 }
@@ -51,11 +51,20 @@
   margin: 4px 4px 0px 0px;
   padding: 4px 12px;
   font-size: 13px;
-  max-width: 120px;
+  max-width: 120px !important;
   width: 100%;
   height: 30px;
 }
-
+.ffotp-send-otp:hover,
+.ffotp-confirm-otp:hover {
+  background-color: #336699;
+  color: #ffffff;
+}
+.ffotp-reset-phone:hover {
+  background-color: #17a8e3;
+  color: #ffffff;
+  border: 1px solid #17a8e3;
+}
 .forminator-iti-input.iti .iti__selected-country {
   max-height: 40px !important;
 }
