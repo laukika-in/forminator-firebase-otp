@@ -132,6 +132,9 @@ document.addEventListener("DOMContentLoaded", function () {
             loading.style.display = "none";
             otpSection.style.display = "block";
             resetBtn.style.display = "inline-block";
+            phoneInput.setAttribute("readonly", "true");
+phoneInput.classList.add("ffotp-locked");
+
           })
           .catch((error) => {
             console.error(error);
@@ -178,6 +181,9 @@ document.addEventListener("DOMContentLoaded", function () {
         resetBtn.style.display = "none";
         phoneInput.setAttribute("required", "true");
         submitButton.disabled = true;
+        phoneInput.removeAttribute("readonly");
+phoneInput.classList.remove("ffotp-locked");
+
       });
 
       form.addEventListener("submit", function (e) {
