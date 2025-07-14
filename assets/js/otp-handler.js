@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div id="otp-section" style="display:none; margin-top: 10px;">
                     <input type="text" id="otp_code" placeholder="Enter OTP" />
                     <button type="button" id="confirm-otp" disabled>Verify OTP</button>
-                
-                </div><button type="button" id="reset-phone" style="display:none;">Change Number</button>
+                <button type="button" id="reset-phone" style="display:none;">Change Number</button>
+                </div>
                 <p id="error-message" style="color:red; margin-top:6px;"></p>
             `;
       phoneInput.parentNode.appendChild(otpContainer);
