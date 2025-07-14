@@ -11,23 +11,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (!phoneInput || !submitButton) return;
 
+      // Add OTP UI right after phone input
       const otpContainer = document.createElement("div");
+      otpContainer.classList.add("ffotp-otp-ui");
       otpContainer.innerHTML = `
-        <div class="recaptcha-container" id="recaptcha-container-${uniqueId}"></div>
-        <button type="button" class="ffotp-send-otp" id="send-otp-${uniqueId}">Send OTP</button>
+        <div id="recaptcha-container-${uniqueId}"></div>
+        <button type="button" id="send-otp-${uniqueId}" class="ffotp-send-otp">Send OTP</button>
         <div id="otp-loading-${uniqueId}" style="display:none;">Sending...</div>
-        <div id="otp-section-${uniqueId}" class="ffotp-otp-ui" style="display:none;">
-          <div class="otp-block">
-            <input type="text" id="otp_code-${uniqueId}" placeholder="Enter OTP" />
-            <button type="button" id="confirm-otp-${uniqueId}" disabled>Verify OTP</button>
-            <button type="button" id="reset-phone-${uniqueId}" style="display:none;">Change Number</button>
-          </div>
+        <div id="otp-section-${uniqueId}" style="display:none; margin-top: 10px;">
+            <div class="otp-block">
+                <input type="text" id="otp_code-${uniqueId}" placeholder="Enter OTP" />
+                <button type="button" id="confirm-otp-${uniqueId}" disabled>Verify OTP</button>
+                <button type="button" id="reset-phone-${uniqueId}" style="display:none;">Change Number</button>
+            </div>
         </div>
         <p id="error-message-${uniqueId}" style="color:red; margin-top:6px;"></p>
       `;
-      phoneInput.parentNode.appendChild(otpContainer);
+      phoneInput.closest(".forminator-field").appendChild(otpContainer);
 
-      // Scoped selectors inside current form
+      // Scoped references
       const sendBtn = form.querySelector(`#send-otp-${uniqueId}`);
       const otpInput = form.querySelector(`#otp_code-${uniqueId}`);
       const confirmBtn = form.querySelector(`#confirm-otp-${uniqueId}`);
@@ -63,10 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   showError("Recaptcha expired. Please try again.");
                 },
               });
-
-            window[`recaptchaVerifier_${uniqueId}`].render().catch((err) => {
-              console.error("Recaptcha render failed:", err);
-            });
+            window[`recaptchaVerifier_${uniqueId}`].render();
           } catch (e) {
             console.warn("Recaptcha already initialized or invalid:", e);
           }
