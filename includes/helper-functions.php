@@ -10,20 +10,20 @@ function ffotp_get_forminator_forms_with_fields() {
         error_log("Checking form: " . $form->id . ' - ' . $form->name);
 
         $form_model = Forminator_API::get_form($form->id);
-        if (!$form_model || !method_exists($form_model, 'get_fields')) {
-            error_log("No model or get_fields for form ID: " . $form->id);
+        if (!$form_model || !isset($form_model->raw['fields'])) {
+            error_log("No raw field data for form ID: " . $form->id);
             continue;
         }
 
-        $form_fields = $form_model->get_fields();
+        $form_fields = $form_model->raw['fields'];
         error_log("Total fields for form ID {$form->id}: " . count($form_fields));
 
         $fields = [];
 
         foreach ($form_fields as $field) {
-            $name    = property_exists($field, 'name') ? $field->name : '';
-            $label   = property_exists($field, 'field_label') ? $field->field_label : '';
-            $element = property_exists($field, 'element') ? $field->element : '';
+            $name    = $field['name'] ?? '';
+            $label   = $field['field_label'] ?? '';
+            $element = $field['element'] ?? '';
 
             error_log("Field element: {$element} | name: {$name} | label: {$label}");
 
@@ -41,6 +41,7 @@ function ffotp_get_forminator_forms_with_fields() {
 
     return $result;
 }
+
 
 function ffotp_get_forminator_forms() {
     if (!class_exists('Forminator_API')) return [];
