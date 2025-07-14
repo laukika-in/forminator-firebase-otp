@@ -56,9 +56,9 @@
   height: 30px;
 }
 
-/* .forminator-iti-input.iti .iti__selected-country {
-  height: 50% !important;
-} */
+.forminator-iti-input.iti .iti__selected-country {
+  max-height: 40px !important;
+}
 
 @media (max-width: 767px) {
   .ffotp-reset-phone,
