@@ -97,15 +97,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
       sendBtn.addEventListener("click", () => {
         clearError();
-        const itiInput = phoneInput
-          .closest(".forminator-field")
-          .querySelector(".iti input");
-        const fullPhone = itiInput
-          ? itiInput.value.replace(/\s/g, "")
-          : phoneInput.value.replace(/\s/g, "");
+        const fullPhone =
+          phoneInput
+            .closest(".iti")
+            .querySelector("input.iti__tel-input")
+            ?.value.replace(/\s/g, "") || phoneInput.value.replace(/\s/g, "");
 
         if (phoneInput.value.length < 6) {
           showError("Enter a valid phone number.");
+          return;
+        }
+        if (!/^\+\d{6,15}$/.test(fullPhone)) {
+          showError(
+            "Please enter a valid international phone number (e.g., +919876543210)."
+          );
           return;
         }
 
