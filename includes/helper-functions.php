@@ -1,43 +1,56 @@
-<?php  
-function ffotp_get_all_forminator_form_fields_detailed() {
+<?php 
+<?php
+function ffotp_get_forminator_forms_with_fields() {
     if ( ! class_exists( 'Forminator_API' ) ) {
         return [];
     }
 
-    $posts_or_models = Forminator_API::get_forms();
-    $result = [];
+    // This returns WP_Post[] (the form posts)
+    $form_posts = Forminator_API::get_forms();
+    $result     = [];
 
-    foreach ( $posts_or_models as $form_post_or_model ) {
-        $form_id = isset( $form_post_or_model->ID ) 
-            ? $form_post_or_model->ID 
-            : $form_post_or_model->id;
-        $form_title = isset( $form_post_or_model->post_title ) 
-            ? $form_post_or_model->post_title 
-            : $form_post_or_model->name;
-
-        $form_model = Forminator_API::get_form( $form_id );
-        if ( ! $form_model instanceof Forminator_Form_Model 
-            || empty( $form_model->raw['fields'] ) 
-            || ! is_array( $form_model->raw['fields'] ) ) {
+    foreach ( $form_posts as $item ) {
+        // Determine form ID and title
+        if ( $item instanceof WP_Post ) {
+            $form_id    = $item->ID;
+            $form_title = $item->post_title;
+        } elseif ( is_object( $item ) && isset( $item->id, $item->name ) ) {
+            // In some contexts you might get the model directly
+            $form_id    = $item->id;
+            $form_title = $item->name;
+        } else {
             continue;
         }
 
+        // Fetch the actual Forminator model
+        $model = Forminator_API::get_form( $form_id );
+        if ( ! $model instanceof Forminator_Form_Model ) {
+            continue;
+        }
+
+        // Ensure raw fields exist
+        $raw = $model->raw;
+        if ( empty( $raw['fields'] ) || ! is_array( $raw['fields'] ) ) {
+            continue;
+        }
+
+        // Build the dropdown list
         $fields = [];
-
-        foreach ( $form_model->raw['fields'] as $field_def ) {
-            $settings = $field_def['settings'] ?? [];
-            $field_data = [
-                'name'       => $settings['name']       ?? '',
-                'label'      => $settings['label']      ?? '',
-                'type'       => $field_def['type']      ?? '',
-                'placeholder'=> $settings['placeholder']?? '',
-                'required'   => ! empty( $settings['required'] ) ? true : false,
-                'field_raw'  => $field_def, // full raw array if needed for debugging
-            ];
-
-            if ( $field_data['name'] ) {
-                $fields[] = $field_data;
+        foreach ( $raw['fields'] as $field_def ) {
+            // Each field_def is an array; its 'settings' key holds name/label
+            if ( ! is_array( $field_def ) || empty( $field_def['settings'] ) || ! is_array( $field_def['settings'] ) ) {
+                continue;
             }
+            $settings = $field_def['settings'];
+            $name     = $settings['name']  ?? '';
+            $label    = $settings['label'] ?? '';
+
+            if ( ! $name ) {
+                continue;
+            }
+
+            $display = $label ?: $name;
+            $fields[ $name ] = "{$display} ({$name})";
         }
 
         if ( ! empty( $fields ) ) {
