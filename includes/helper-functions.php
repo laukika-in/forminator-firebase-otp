@@ -13,7 +13,7 @@ function ffotp_get_forminator_forms_with_fields() {
         $fields = [];
 
         foreach ($form_fields as $field) {
-            if ($field->element === 'phone') {
+            if (in_array($field->element, ['phone', 'text', 'number'])) {
                 $fields[$field->name] = $field->field_label . ' (' . $field->name . ')';
             }
         }
@@ -26,6 +26,7 @@ function ffotp_get_forminator_forms_with_fields() {
 
     return $result;
 }
+
 
 function ffotp_get_forminator_forms() {
     if (!class_exists('Forminator_API')) return [];

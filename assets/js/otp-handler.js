@@ -14,17 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       clearInterval(checkFormInterval);
 
-      // Inject country selector + OTP UI
-      const countrySelect = document.createElement("select");
-      countrySelect.id = `ffotp-country-${formId}`;
-      countrySelect.innerHTML = `
-                <option value="+91">India (+91)</option>
-                <option value="+977">Nepal (+977)</option>
-            `;
-      countrySelect.style.marginBottom = "6px";
-
-      phoneInput.parentNode.insertBefore(countrySelect, phoneInput);
-
       const otpContainer = document.createElement("div");
       otpContainer.innerHTML = `
                 <div id="recaptcha-container-${formId}"></div>
@@ -86,7 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       sendBtn.addEventListener("click", () => {
         clearError();
-        const fullPhone = countryCode.value + phoneInput.value;
+        const fullPhone = phoneInput.value.replace(/\s/g, "");
+
         if (phoneInput.value.length < 6) {
           showError("Enter a valid phone number.");
           return;
