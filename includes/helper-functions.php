@@ -7,14 +7,23 @@ function ffotp_get_forminator_forms_with_fields() {
 
     foreach ($forms as $form) {
         $form_model = Forminator_API::get_form($form->id);
-        if (!$form_model || !method_exists($form_model, 'get_fields')) continue;
+        if (!$form_model || !isset($form_model->fields)) continue;
 
-        $form_fields = $form_model->get_fields();
         $fields = [];
+        foreach ($form_model->fields as $field) {
+            // If object, convert to array
+            if (is_object($field) && method_exists($field, 'to_array')) {
+                $field = $field->to_array();
+            }
 
-        foreach ($form_fields as $field) {
-            if (in_array($field->element, ['phone', 'text', 'number'])) {
-                $fields[$field->name] = $field->field_label . ' (' . $field->name . ')';
+            if (!is_array($field)) continue;
+
+            $label = $field['field_label'] ?? '(no label)';
+            $name  = $field['element_id'] ?? ($field['id'] ?? '');
+            $type  = $field['type'] ?? '';
+
+            if (in_array($type, ['text', 'phone', 'number'])) {
+                $fields[$name] = "$label ($name)";
             }
         }
 
@@ -26,6 +35,7 @@ function ffotp_get_forminator_forms_with_fields() {
 
     return $result;
 }
+
 
 
 function ffotp_get_forminator_forms() {
