@@ -3,18 +3,18 @@
 function ffotp_get_forminator_forms_with_fields() {
     if (!class_exists('Forminator_API')) return [];
 
-    $forms = Forminator_API::get_forms(); // Returns Forminator_Form_Model[]
+    $forms = Forminator_API::get_forms(); // returns WP_Post[]
     $result = [];
 
-    foreach ($forms as $form) {
-        $form_id = $form->id;
-        $form_title = $form->name;
+    foreach ($forms as $form_post) {
+        $form_id = $form_post->ID;
+        $form_title = $form_post->post_title;
 
         error_log("Checking form: $form_id - $form_title");
 
         $form_model = Forminator_API::get_form($form_id);
         if (!$form_model || !isset($form_model->raw['fields'])) {
-            error_log("No raw field data for form ID: " . $form_id);
+            error_log("No raw field data for form ID: $form_id");
             continue;
         }
 
