@@ -1,4 +1,31 @@
 <?php
+function ffotp_get_forminator_forms_with_fields() {
+    if (!class_exists('Forminator_API')) return [];
+
+    $forms = Forminator_API::get_forms();
+    $result = [];
+
+    foreach ($forms as $form) {
+        $form_model = Forminator_API::get_form($form->id);
+        if (!$form_model || !method_exists($form_model, 'get_fields')) continue;
+
+        $form_fields = $form_model->get_fields();
+        $fields = [];
+
+        foreach ($form_fields as $field) {
+            if ($field->element === 'phone') {
+                $fields[$field->name] = $field->field_label . ' (' . $field->name . ')';
+            }
+        }
+
+        $result[$form->id] = [
+            'name' => $form->name,
+            'fields' => $fields
+        ];
+    }
+
+    return $result;
+}
 
 function ffotp_get_forminator_forms() {
     if (!class_exists('Forminator_API')) return [];
@@ -28,28 +55,5 @@ function ffotp_get_firebase_config_js() {
 
     return implode(",\n", $out);
 }
-function ffotp_get_forminator_forms_with_fields() {
-    if (!class_exists('Forminator_API')) return [];
 
-    $forms = Forminator_API::get_forms();
-    $result = [];
-
-    foreach ($forms as $form) {
-        $fields = [];
-        $form_fields = Forminator_API::get_form($form->id)->get_fields();
-
-        foreach ($form_fields as $field) {
-            if ($field->element === 'phone') {
-                $fields[$field->name] = $field->field_label . ' (' . $field->name . ')';
-            }
-        }
-
-        $result[$form->id] = [
-            'name' => $form->name,
-            'fields' => $fields
-        ];
-    }
-
-    return $result;
-}
 

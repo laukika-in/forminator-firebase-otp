@@ -39,7 +39,10 @@ function ffotp_render_form_mapping() {
 
     foreach ($forms as $form_id => $form_data) {
         echo "<h4 style='margin-top:20px;'>" . esc_html($form_data['name']) . " (ID: $form_id)</h4>";
-
+        if (empty($form_data['fields'])) {
+            echo "<em style='color:#a00;'>No phone fields found in this form.</em><hr/>";
+            continue;
+        }
         echo "<div class='ffotp-phone-map-group'>";
         $mapped_fields = $form_mappings[$form_id] ?? [];
 
