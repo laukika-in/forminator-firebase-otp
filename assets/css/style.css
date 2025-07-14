@@ -56,7 +56,9 @@
   height: 30px;
 }
 .ffotp-send-otp:hover,
-.ffotp-confirm-otp:hover {
+.ffotp-confirm-otp:hover,
+.ffotp-send-otp:focus,
+.ffotp-confirm-otp:focus {
   background-color: #336699;
   color: #ffffff;
 }
@@ -65,7 +67,9 @@
   color: #ffffff;
   border: 1px solid #17a8e3;
 }
-.forminator-iti-input.iti .iti__selected-country {
+.forminator-ui.forminator-custom-form[data-design="flat"]
+  .forminator-phone
+  .iti__country-container {
   max-height: 40px !important;
 }
 .ffotp-locked {

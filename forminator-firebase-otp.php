@@ -4,7 +4,7 @@
  * Description: Firebase-based OTP verification for Forminator forms.
  * Plugin URI: https://laukika.com/
  * Author: Laukika
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author URI: https://laukika.com/
  * Text Domain: ffotp
  * Requires Plugins: forminator
