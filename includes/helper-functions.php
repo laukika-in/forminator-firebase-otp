@@ -12,8 +12,10 @@ function ffotp_get_forminator_forms_with_fields() {
         $form_fields = $form_model->get_fields();
         $fields = [];
 
+        $allowed_input_types = ['phone', 'text', 'number', 'email', 'website'];
+
         foreach ($form_fields as $field) {
-            if (in_array($field->element, ['phone', 'text', 'number'])) {
+            if (in_array($field->element, $allowed_input_types)) {
                 $fields[$field->name] = $field->field_label . ' (' . $field->name . ')';
             }
         }
@@ -26,6 +28,7 @@ function ffotp_get_forminator_forms_with_fields() {
 
     return $result;
 }
+
 
 
 function ffotp_get_forminator_forms() {
