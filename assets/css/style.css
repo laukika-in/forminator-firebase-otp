@@ -1,0 +1,66 @@
+.ffotp-otp-ui {
+  margin-top: 10px;
+}
+.ffotp-otp-ui input[type="text"] {
+  margin-right: 10px;
+}
+.ffotp-otp-ui button {
+  margin-top: 6px;
+}
+
+.otp-block {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+}
+#otp_code {
+  background-color: #ededed;
+  color: #000000;
+  border: 0px;
+
+  font-size: 13px;
+  max-width: 120px;
+  width: 100%;
+  margin-right: 6px;
+  height: 30px;
+}
+#reset-phone {
+  background-color: #fff;
+  color: #17a8e3;
+  border: 1px solid #17a8e3;
+  margin: 4px 4px 0px 0px;
+  padding: 4px 12px;
+  font-size: 13px;
+  max-width: 120px;
+  width: 100%;
+  height: 30px;
+}
+#send-otp,
+#confirm-otp {
+  background-color: #17a8e3;
+  color: #ffffff;
+  border: 0px;
+  margin: 4px 4px 0px 0px;
+  padding: 4px 12px;
+  font-size: 13px;
+  max-width: 120px;
+  width: 100%;
+  height: 30px;
+}
+
+@media (max-width: 767px) {
+  #reset-phone {
+    width: 100%;
+    height: 30px;
+  }
+  #send-otp,
+  #confirm-otp {
+    width: 100%;
+    height: 30px;
+  }
+  .otp-block {
+    justify-content: space-around;
+  }
+}

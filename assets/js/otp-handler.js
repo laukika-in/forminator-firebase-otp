@@ -16,15 +16,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const otpContainer = document.createElement("div");
       otpContainer.innerHTML = `
-                <div id="recaptcha-container-${formId}"></div>
-                <button type="button" id="send-otp-${formId}" style="margin-top:6px;">Send OTP</button>
-                <div id="otp-loading-${formId}" style="display:none;">Sending...</div>
-                <div id="otp-section-${formId}" style="display:none; margin-top: 10px;">
-                    <input type="text" id="otp_code-${formId}" placeholder="Enter OTP" />
-                    <button type="button" id="confirm-otp-${formId}" disabled>Verify OTP</button>
+                <div id="recaptcha-container"></div>
+                <button type="button" id="send-otp">Send OTP</button>
+                <div id="otp-loading" style="display:none;">Sending...</div>
+                <div id="otp-section" style="display:none; margin-top: 10px;">
+                <div class="otp-block">
+                    <input type="text" id="otp_code" placeholder="Enter OTP" />
+                    <button type="button" id="confirm-otp" disabled>Verify OTP</button>
+                    <button type="button" id="reset-phone" style="display:none;">Change Number</button>
                 </div>
-                <button type="button" id="reset-phone-${formId}" style="display:none;">Change Number</button>
-                <p id="error-message-${formId}" style="color:red; margin-top:6px;"></p>
+                </div>
+                
+                <p id="error-message" style="color:red; margin-top:6px;"></p>
             `;
       phoneInput.parentNode.appendChild(otpContainer);
 

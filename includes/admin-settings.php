@@ -2,6 +2,16 @@
 
 add_action('admin_menu', 'ffotp_add_admin_menu');
 add_action('admin_init', 'ffotp_settings_init');
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== 'toplevel_page_ffotp_settings') return;
+
+    wp_enqueue_style(
+        'ffotp-admin-style',
+        plugin_dir_url(__FILE__) . '../assets/css/admin.css',
+        [],
+        FFOTP_VERSION
+    );
+});
 
 function ffotp_add_admin_menu() {
     add_menu_page(
@@ -48,6 +58,8 @@ function ffotp_render_form_mapping() {
 
         foreach ($mapped_fields as $index => $saved_field) {
             echo "<select name='ffotp_settings[form_mappings][$form_id][]'>";
+            echo "<option value=''>— Select a phone field —</option>";
+
             foreach ($form_data['fields'] as $field_name => $label) {
                 $selected = selected($field_name, $saved_field, false);
                 echo "<option value='" . esc_attr($field_name) . "' $selected>$label</option>";

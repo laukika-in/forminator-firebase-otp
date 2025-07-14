@@ -15,6 +15,13 @@ function ffotp_enqueue_otp_script() {
     echo '<script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-auth.js"></script>';
 
     // Init Firebase
+    wp_enqueue_style(
+        'ffotp-frontend-style',
+        FFOTP_URL . 'assets/css/style.css',
+        [],
+        FFOTP_VERSION
+    );
+
     ?>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
