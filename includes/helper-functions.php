@@ -1,4 +1,5 @@
 <?php
+
 function ffotp_get_forminator_forms_with_fields() {
     if (!class_exists('Forminator_API')) return [];
 
@@ -6,29 +7,40 @@ function ffotp_get_forminator_forms_with_fields() {
     $result = [];
 
     foreach ($forms as $form) {
+        error_log("Checking form: " . $form->id . ' - ' . $form->name);
+
         $form_model = Forminator_API::get_form($form->id);
-        if (!$form_model || !method_exists($form_model, 'get_fields')) continue;
+        if (!$form_model || !method_exists($form_model, 'get_fields')) {
+            error_log("No model or get_fields for form ID: " . $form->id);
+            continue;
+        }
 
         $form_fields = $form_model->get_fields();
+        error_log("Total fields for form ID {$form->id}: " . count($form_fields));
+
         $fields = [];
 
         foreach ($form_fields as $field) {
-            if (!empty($field->name) && !empty($field->field_label)) {
-                $fields[$field->name] = $field->field_label . ' (' . $field->name . ')';
+            $name    = property_exists($field, 'name') ? $field->name : '';
+            $label   = property_exists($field, 'field_label') ? $field->field_label : '';
+            $element = property_exists($field, 'element') ? $field->element : '';
+
+            error_log("Field element: {$element} | name: {$name} | label: {$label}");
+
+            if (!empty($name)) {
+                $display_label = !empty($label) ? $label : ucfirst($element);
+                $fields[$name] = "{$display_label} ({$name})";
             }
         }
 
-
         $result[$form->id] = [
-            'name' => $form->name,
+            'name'   => $form->name,
             'fields' => $fields
         ];
     }
 
     return $result;
 }
-
-
 
 function ffotp_get_forminator_forms() {
     if (!class_exists('Forminator_API')) return [];
@@ -58,5 +70,3 @@ function ffotp_get_firebase_config_js() {
 
     return implode(",\n", $out);
 }
-
-
