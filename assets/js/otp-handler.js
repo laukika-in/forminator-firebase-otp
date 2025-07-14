@@ -27,7 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
         <p id="error-message-${uniqueId}" style="color:red; margin-top:6px;"></p>
       `;
-      phoneInput.closest(".forminator-field").appendChild(otpContainer);
+      if (phoneInput.parentNode) {
+        phoneInput.parentNode.insertBefore(
+          otpContainer,
+          phoneInput.nextSibling
+        );
+      }
 
       // Scoped references
       const sendBtn = form.querySelector(`#send-otp-${uniqueId}`);
