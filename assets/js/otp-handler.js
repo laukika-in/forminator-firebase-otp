@@ -2,44 +2,48 @@ document.addEventListener("DOMContentLoaded", function () {
   if (typeof FFOTP_Settings === "undefined" || !FFOTP_Settings.forms) return;
 
   Object.entries(FFOTP_Settings.forms).forEach(([formId, phoneField]) => {
-    const allForms = document.querySelectorAll(`#forminator-module-${formId}`);
+    const formSelector = `#forminator-module-${formId}`;
+    const checkFormInterval = setInterval(() => {
+      const form = document.querySelector(formSelector);
+      if (!form) return;
 
-    allForms.forEach((form, index) => {
-      const uniqueId = `${formId}_${index}`;
       const phoneInput = form.querySelector(`input[name="${phoneField}"]`);
       const submitButton = form.querySelector(".forminator-button-submit");
 
       if (!phoneInput || !submitButton) return;
 
-      // Add OTP UI right after phone input
-      const otpContainer = document.createElement("div");
-      otpContainer.classList.add("ffotp-otp-ui");
-      otpContainer.innerHTML = `
-        <div id="recaptcha-container-${uniqueId}"></div>
-        <button type="button" id="send-otp-${uniqueId}" class="ffotp-send-otp">Send OTP</button>
-        <div id="otp-loading-${uniqueId}" style="display:none;">Sending...</div>
-        <div id="otp-section-${uniqueId}" style="display:none; margin-top: 10px;">
-            <div class="otp-block">
-                <input type="text" id="otp_code-${uniqueId}" placeholder="Enter OTP" />
-                <button type="button" id="confirm-otp-${uniqueId}" disabled>Verify OTP</button>
-                <button type="button" id="reset-phone-${uniqueId}" style="display:none;">Change Number</button>
-            </div>
-        </div>
-        <p id="error-message-${uniqueId}" style="color:red; margin-top:6px;"></p>
-      `;
-      phoneInput.closest(".forminator-field").appendChild(otpContainer);
+      clearInterval(checkFormInterval);
 
-      // Scoped references
-      const sendBtn = form.querySelector(`#send-otp-${uniqueId}`);
-      const otpInput = form.querySelector(`#otp_code-${uniqueId}`);
-      const confirmBtn = form.querySelector(`#confirm-otp-${uniqueId}`);
-      const resetBtn = form.querySelector(`#reset-phone-${uniqueId}`);
-      const otpSection = form.querySelector(`#otp-section-${uniqueId}`);
-      const loading = form.querySelector(`#otp-loading-${uniqueId}`);
-      const errorBox = form.querySelector(`#error-message-${uniqueId}`);
-      const recaptchaId = `recaptcha-container-${uniqueId}`;
+      const otpContainer = document.createElement("div");
+      otpContainer.innerHTML = `
+        <div id="recaptcha-container-${formId}"></div>
+
+        <button type="button" id="send-otp-${formId}" class="ffotp-send-otp">Send OTP</button>
+        <div id="otp-loading-${formId}" style="display:none;">Sending...</div>
+        <div id="otp-section-${formId}" class="ffotp-otp-ui" style="display:none; margin-top: 10px;">
+            <div class="otp-block">
+                <input type="text" id="otp_code-${formId}" class="ffotp-otp_code" placeholder="Enter OTP" />
+                <button type="button" id="confirm-otp-${formId}" class="ffotp-confirm-otp" disabled>Verify OTP</button>
+                <button type="button" id="reset-phone-${formId}" class="ffotp-reset-phone" style="display:none;">Change Number</button>
+            </div>
+            
+        </div>
+        <p id="error-message-${formId}" style="color:red; margin-top:6px;"></p>
+        `;
+
+      phoneInput.parentNode.appendChild(otpContainer);
+
+      // Grab UI elements
+      const sendBtn = form.querySelector(`#send-otp-${formId}`);
+      const otpInput = form.querySelector(`#otp_code-${formId}`);
+      const confirmBtn = form.querySelector(`#confirm-otp-${formId}`);
+      const resetBtn = form.querySelector(`#reset-phone-${formId}`);
+      const otpSection = form.querySelector(`#otp-section-${formId}`);
+      const loading = form.querySelector(`#otp-loading-${formId}`);
+      const errorBox = form.querySelector(`#error-message-${formId}`);
 
       let otpVerified = false;
+      let recaptchaVerifier;
 
       function showError(msg) {
         errorBox.textContent = msg;
@@ -49,58 +53,68 @@ document.addEventListener("DOMContentLoaded", function () {
         errorBox.textContent = "";
       }
 
-      function initRecaptcha() {
-        const container = form.querySelector(`#${recaptchaId}`);
-        if (!container || container.hasChildNodes()) return;
+      function initRecaptcha(formId) {
+        const recaptchaId = `recaptcha-container-${formId}`;
+        const container = document.getElementById(recaptchaId);
 
-        if (!window[`recaptchaVerifier_${uniqueId}`]) {
+        if (!container) {
+          console.warn(`Recaptcha container #${recaptchaId} not found.`);
+          return;
+        }
+
+        // Prevent re-initialization
+        if (!window[`recaptchaVerifier_${formId}`]) {
           try {
-            window[`recaptchaVerifier_${uniqueId}`] =
-              new firebase.auth.RecaptchaVerifier(container, {
+            window[`recaptchaVerifier_${formId}`] =
+              new firebase.auth.RecaptchaVerifier(recaptchaId, {
                 size: "invisible",
                 callback: function () {
                   console.log("Recaptcha solved");
                 },
                 "expired-callback": function () {
-                  showError("Recaptcha expired. Please try again.");
+                  const errorBox = document.getElementById(
+                    `error-message-${formId}`
+                  );
+                  if (errorBox)
+                    errorBox.textContent =
+                      "Recaptcha expired. Please try again.";
                 },
               });
-            window[`recaptchaVerifier_${uniqueId}`].render();
+
+            window[`recaptchaVerifier_${formId}`].render().catch((err) => {
+              console.error("Recaptcha render failed:", err);
+            });
           } catch (e) {
-            console.warn("Recaptcha already initialized or invalid:", e);
+            console.error("Recaptcha already initialized or invalid:", e);
           }
         }
       }
 
       phoneInput.addEventListener("input", () => {
         clearError();
-        phoneInput.value = phoneInput.value
-          .replace(/\\D/g, "")
-          .substring(0, 15);
+        phoneInput.value = phoneInput.value.replace(/\D/g, "").substring(0, 10);
         sendBtn.disabled = phoneInput.value.length < 6;
       });
 
       sendBtn.addEventListener("click", () => {
         clearError();
-        const fullPhone = phoneInput.value.trim();
+        const fullPhone = phoneInput.value.replace(/\s/g, "");
 
-        if (fullPhone.length < 6) {
+        if (phoneInput.value.length < 6) {
           showError("Enter a valid phone number.");
           return;
         }
 
-        initRecaptcha();
+        initRecaptcha(formId);
+
         loading.style.display = "block";
         sendBtn.style.display = "none";
 
         firebase
           .auth()
-          .signInWithPhoneNumber(
-            fullPhone,
-            window[`recaptchaVerifier_${uniqueId}`]
-          )
+          .signInWithPhoneNumber(fullPhone, recaptchaVerifier)
           .then((result) => {
-            window[`confirmationResult_${uniqueId}`] = result;
+            window[`confirmationResult_${formId}`] = result;
             loading.style.display = "none";
             otpSection.style.display = "block";
             resetBtn.style.display = "inline-block";
@@ -114,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       otpInput.addEventListener("input", () => {
-        otpInput.value = otpInput.value.replace(/\\D/g, "").substring(0, 6);
+        otpInput.value = otpInput.value.replace(/\D/g, "").substring(0, 6);
         confirmBtn.disabled = otpInput.value.length !== 6;
       });
 
@@ -125,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
 
-        window[`confirmationResult_${uniqueId}`]
+        window[`confirmationResult_${formId}`]
           .confirm(code)
           .then(() => {
             otpVerified = true;
@@ -160,6 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       submitButton.disabled = true;
-    });
+    }, 300);
   });
 });
