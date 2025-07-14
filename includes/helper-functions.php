@@ -1,68 +1,48 @@
-<?php 
-<?php
+<?php   
 function ffotp_get_forminator_forms_with_fields() {
     if ( ! class_exists( 'Forminator_API' ) ) {
         return [];
     }
 
-    // This returns WP_Post[] (the form posts)
     $form_posts = Forminator_API::get_forms();
     $result     = [];
 
     foreach ( $form_posts as $item ) {
-        // Determine form ID and title
         if ( $item instanceof WP_Post ) {
             $form_id    = $item->ID;
             $form_title = $item->post_title;
         } elseif ( is_object( $item ) && isset( $item->id, $item->name ) ) {
-            // In some contexts you might get the model directly
             $form_id    = $item->id;
             $form_title = $item->name;
         } else {
             continue;
         }
 
-        // Fetch the actual Forminator model
         $model = Forminator_API::get_form( $form_id );
         if ( ! $model instanceof Forminator_Form_Model ) {
             continue;
         }
 
-        // Ensure raw fields exist
         $raw = $model->raw;
         if ( empty( $raw['fields'] ) || ! is_array( $raw['fields'] ) ) {
             continue;
         }
 
-        // Build the dropdown list
         $fields = [];
-        foreach ( $raw['fields'] as $field_def ) {
-            // Each field_def is an array; its 'settings' key holds name/label
-            if ( ! is_array( $field_def ) || empty( $field_def['settings'] ) || ! is_array( $field_def['settings'] ) ) {
-                continue;
-            }
-            $settings = $field_def['settings'];
-            $name     = $settings['name']  ?? '';
-            $label    = $settings['label'] ?? '';
+        foreach ( $raw['fields'] as $field_def_raw ) {
+            $field_def = (array) $field_def_raw;
 
-            if ( ! $name ) {
-                continue;
-            }
+            // Some versions store settings under 'settings'; others at root
+            $settings = isset( $field_def['settings'] ) && is_array( $field_def['settings'] )
+                ? $field_def['settings']
+                : $field_def;
 
-            $display = $label ?: $name;
-            $fields[ $name ] = "{$display} ({$name})";
-        }
+            $name  = $settings['name']  ?? '';
+            $label = $settings['label'] ?? '';
 
-        if ( ! empty( $fields ) ) {
-            $result[ $form_id ] = [
-                'name'   => $form_title,
-                'fields' => $fields,
-            ];
-        }
-    }
+            if ( ! $name ) continue;
 
-    return $result;
-}
+            $display = $label ?: $nam
 
 
 function ffotp_get_forminator_forms() {
