@@ -3,12 +3,14 @@
 function ffotp_get_forminator_forms_with_fields() {
     if (!class_exists('Forminator_API')) return [];
 
-    $forms = Forminator_API::get_forms(); // returns WP_Post objects
+    $forms = Forminator_API::get_forms(); // Returns Forminator_Form_Model[]
     $result = [];
 
     foreach ($forms as $form) {
-        $form_id = $form->ID;
-        error_log("Checking form: $form_id - " . $form->post_title);
+        $form_id = $form->id;
+        $form_title = $form->name;
+
+        error_log("Checking form: $form_id - $form_title");
 
         $form_model = Forminator_API::get_form($form_id);
         if (!$form_model || !isset($form_model->raw['fields'])) {
@@ -35,7 +37,7 @@ function ffotp_get_forminator_forms_with_fields() {
         }
 
         $result[$form_id] = [
-            'name'   => $form->post_title,
+            'name'   => $form_title,
             'fields' => $fields
         ];
     }
