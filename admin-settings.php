@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Forminator Firebase OTP
+ * Plugin Name: Forminator OTP Verification 
  * Description: Firebase-based OTP verification for Forminator forms.
  * Plugin URI: https://laukika.com/
  * Author: Laukika
