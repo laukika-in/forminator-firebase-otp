@@ -2,7 +2,7 @@
 /*
 Plugin Name: Forminator Firebase OTP
 Description: Firebase-based OTP verification for Forminator forms.
-Version: 1.19
+Version: 1.20
 Author: Your Name
 */
 
