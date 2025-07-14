@@ -1,37 +1,45 @@
-<?php 
+<?php
 function ffotp_get_forminator_forms_with_fields() {
     if ( ! class_exists( 'Forminator_API' ) ) {
         return [];
     }
 
-    $forms  = Forminator_API::get_forms(); // returns Forminator_Form_Model[]
-    $result = [];
+    // get_forms() returns an array of WP_Post objects
+    $form_posts = Forminator_API::get_forms();
+    $result     = [];
 
-    foreach ( $forms as $form ) {
-        // model already has ->id and ->name
-        $form_id    = $form->id;
-        $form_title = $form->name;
+    foreach ( $form_posts as $form_post ) {
+        // WP_Post properties
+        $form_id    = $form_post->ID;
+        $form_title = $form_post->post_title;
 
-        // make sure raw fields exist
-        if ( empty( $form->raw['fields'] ) || ! is_array( $form->raw['fields'] ) ) {
+        // load the Forminator_Form_Model
+        $form_model = Forminator_API::get_form( $form_id );
+        if ( ! $form_model instanceof Forminator_Form_Model ) {
+            continue;
+        }
+
+        // raw['fields'] is the array of field definitions
+        $raw = $form_model->raw;
+        if ( empty( $raw['fields'] ) || ! is_array( $raw['fields'] ) ) {
             continue;
         }
 
         $fields = [];
-
-        foreach ( $form->raw['fields'] as $field ) {
-            $name  = $field['name']        ?? '';
-            $label = $field['field_label'] ?? '';
+        foreach ( $raw['fields'] as $field_def ) {
+            $name  = $field_def['name']        ?? '';
+            $label = $field_def['field_label'] ?? '';
 
             if ( ! $name ) {
                 continue;
             }
 
-            $display_label = $label ?: $name;
-            $fields[ $name ] = "{$display_label} ({$name})";
+            // Display label (fallback to name if label is empty)
+            $display = $label ?: $name;
+            $fields[ $name ] = "{$display} ({$name})";
         }
 
-        // only include forms that actually have fields
+        // only include forms that have at least one field
         if ( ! empty( $fields ) ) {
             $result[ $form_id ] = [
                 'name'   => $form_title,
@@ -42,7 +50,7 @@ function ffotp_get_forminator_forms_with_fields() {
 
     return $result;
 }
- 
+
 function ffotp_get_forminator_forms() {
     if (!class_exists('Forminator_API')) return [];
 
