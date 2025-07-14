@@ -97,11 +97,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       sendBtn.addEventListener("click", () => {
         clearError();
-        const fullPhone =
-          phoneInput
-            .closest(".iti")
-            .querySelector("input.iti__tel-input")
-            ?.value.replace(/\s/g, "") || phoneInput.value.replace(/\s/g, "");
+        const itiWrapper = phoneInput.closest(".iti");
+        const dialCodeEl = itiWrapper?.querySelector(
+          ".iti__selected-dial-code"
+        );
+        const dialCode = dialCodeEl?.textContent.trim() || "";
+        const localNumber = phoneInput.value.replace(/\D/g, "");
+        const fullPhone = dialCode + localNumber;
 
         if (phoneInput.value.length < 6) {
           showError("Enter a valid phone number.");
