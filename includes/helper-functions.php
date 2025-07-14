@@ -28,3 +28,27 @@ function ffotp_get_firebase_config_js() {
 
     return implode(",\n", $out);
 }
+function ffotp_get_forminator_forms_with_fields() {
+    if (!class_exists('Forminator_API')) return [];
+
+    $forms = Forminator_API::get_forms();
+    $result = [];
+
+    foreach ($forms as $form) {
+        $fields = [];
+        $form_fields = Forminator_API::get_form($form->id)->get_fields();
+
+        foreach ($form_fields as $field) {
+            if ($field['element'] === 'phone') {
+                $fields[$field['name']] = $field['field_label'] . ' (' . $field['name'] . ')';
+            }
+        }
+
+        $result[$form->id] = [
+            'name' => $form->name,
+            'fields' => $fields
+        ];
+    }
+
+    return $result;
+}

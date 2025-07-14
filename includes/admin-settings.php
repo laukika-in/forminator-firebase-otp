@@ -34,14 +34,55 @@ function ffotp_settings_init() {
 
 function ffotp_render_form_mapping() {
     $options = get_option('ffotp_settings');
-    $mappings = $options['form_mappings'] ?? [];
+    $form_mappings = $options['form_mappings'] ?? [];
+    $forms = ffotp_get_forminator_forms_with_fields(); // updated helper
 
-    $forms = ffotp_get_forminator_forms(); // helper
-    foreach ($forms as $form_id => $form_title) {
-        $val = esc_attr($mappings[$form_id] ?? '');
-        echo "<p><strong>$form_title</strong> — Field name: <input type='text' name='ffotp_settings[form_mappings][$form_id]' value='$val' /></p>";
+    foreach ($forms as $form_id => $form_data) {
+        echo "<h4 style='margin-top:20px;'>" . esc_html($form_data['name']) . " (ID: $form_id)</h4>";
+
+        echo "<div class='ffotp-phone-map-group'>";
+        $mapped_fields = $form_mappings[$form_id] ?? [];
+
+        // Always at least one field selector shown
+        if (empty($mapped_fields)) $mapped_fields = [''];
+
+        foreach ($mapped_fields as $index => $saved_field) {
+            echo "<select name='ffotp_settings[form_mappings][$form_id][]'>";
+            foreach ($form_data['fields'] as $field_name => $label) {
+                $selected = selected($field_name, $saved_field, false);
+                echo "<option value='" . esc_attr($field_name) . "' $selected>$label</option>";
+            }
+            echo "</select><br/>";
+        }
+
+        echo "<button type='button' class='button ffotp-add-phone-field' data-form='$form_id'>+ Add another phone field</button>";
+        echo "<hr/>";
+        echo "</div>";
     }
+
+    // Inline JS to clone field dropdowns
+    ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.ffotp-add-phone-field').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const formId = this.dataset.form;
+                const wrapper = this.closest('.ffotp-phone-map-group');
+                const selects = wrapper.querySelectorAll('select');
+                if (selects.length === 0) return;
+
+                const lastSelect = selects[selects.length - 1];
+                const clone = lastSelect.cloneNode(true);
+                clone.name = `ffotp_settings[form_mappings][${formId}][]`;
+                wrapper.insertBefore(clone, this);
+                wrapper.insertBefore(document.createElement('br'), this);
+            });
+        });
+    });
+    </script>
+    <?php
 }
+
 
 function ffotp_settings_page() {
     ?>
