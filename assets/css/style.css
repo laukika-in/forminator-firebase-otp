@@ -55,10 +55,6 @@
   height: 30px;
 }
 
-.forminator-iti-input.iti .iti__country-container {
-  bottom: 45% !important;
-}
-
 @media (max-width: 767px) {
   .ffotp-reset-phone,
   .ffotp-send-otp,

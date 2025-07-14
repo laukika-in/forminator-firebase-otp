@@ -33,14 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
       phoneInput.parentNode.appendChild(otpContainer);
 
       // Grab UI elements
-      const sendBtn = document.getElementById(`send-otp`);
-      const otpInput = document.getElementById(`otp_code`);
-      const confirmBtn = document.getElementById(`confirm-otp`);
-      const resetBtn = document.getElementById(`reset-phone`);
-      const otpSection = document.getElementById(`otp-section`);
-      const loading = document.getElementById(`otp-loading`);
-      const errorBox = document.getElementById(`error-message`);
-      const countryCode = document.getElementById(`ffotp-country`);
+      const sendBtn = form.querySelector(`#send-otp-${formId}`);
+      const otpInput = form.querySelector(`#otp_code-${formId}`);
+      const confirmBtn = form.querySelector(`#confirm-otp-${formId}`);
+      const resetBtn = form.querySelector(`#reset-phone-${formId}`);
+      const otpSection = form.querySelector(`#otp-section-${formId}`);
+      const loading = form.querySelector(`#otp-loading-${formId}`);
+      const errorBox = form.querySelector(`#error-message-${formId}`);
 
       let otpVerified = false;
       let recaptchaVerifier;
