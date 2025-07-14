@@ -3,20 +3,21 @@
 function ffotp_get_forminator_forms_with_fields() {
     if (!class_exists('Forminator_API')) return [];
 
-    $forms = Forminator_API::get_forms();
+    $forms = Forminator_API::get_forms(); // returns WP_Post objects
     $result = [];
 
     foreach ($forms as $form) {
-        error_log("Checking form: " . $form->id . ' - ' . $form->name);
+        $form_id = $form->ID;
+        error_log("Checking form: $form_id - " . $form->post_title);
 
-        $form_model = Forminator_API::get_form($form->id);
+        $form_model = Forminator_API::get_form($form_id);
         if (!$form_model || !isset($form_model->raw['fields'])) {
-            error_log("No raw field data for form ID: " . $form->id);
+            error_log("No raw field data for form ID: " . $form_id);
             continue;
         }
 
         $form_fields = $form_model->raw['fields'];
-        error_log("Total fields for form ID {$form->id}: " . count($form_fields));
+        error_log("Total fields for form ID {$form_id}: " . count($form_fields));
 
         $fields = [];
 
@@ -33,14 +34,15 @@ function ffotp_get_forminator_forms_with_fields() {
             }
         }
 
-        $result[$form->id] = [
-            'name'   => $form->name,
+        $result[$form_id] = [
+            'name'   => $form->post_title,
             'fields' => $fields
         ];
     }
 
     return $result;
 }
+
 
 
 function ffotp_get_forminator_forms() {
