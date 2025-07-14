@@ -97,7 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
       sendBtn.addEventListener("click", () => {
         clearError();
-        const fullPhone = phoneInput.value.replace(/\s/g, "");
+        const itiInput = phoneInput
+          .closest(".forminator-field")
+          .querySelector(".iti input");
+        const fullPhone = itiInput
+          ? itiInput.value.replace(/\s/g, "")
+          : phoneInput.value.replace(/\s/g, "");
 
         if (phoneInput.value.length < 6) {
           showError("Enter a valid phone number.");
